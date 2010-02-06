@@ -182,6 +182,8 @@ width = DEFAULT_WIDTH
 height = DEFAULT_HEIGHT
 cellsize = PAGE_WIDTH / DEFAULT_WIDTH
 
+page_count = 1
+
 op = OptionParser.new do |opts|
   opts.banner = "Usage mazegen.rb [options] outfile.pdf"
   
@@ -190,6 +192,11 @@ op = OptionParser.new do |opts|
     cellsize = PAGE_WIDTH / width
     height = PAGE_HEIGHT / cellsize
   end
+  
+  opts.on("-p", "--pagecount NUM", "number of mazes to put in the output document") do |p| 
+    page_count = p.to_i
+  end
+  
 end
 
 begin
@@ -199,11 +206,17 @@ rescue OptionParser::InvalidOption
   exit
 end
 
-m = Maze.new(width, height)
-m.gen
-
 Prawn::Document.generate(ARGV[0]) do
-  MazeRenderer.new(m,cellsize).render_lines.each do |lstart,lend|
-    stroke {line lstart, lend}
+  while page_count > 0
+    page_count -= 1
+    
+    m = Maze.new(width, height)
+    m.gen
+    
+    MazeRenderer.new(m,cellsize).render_lines.each do |lstart,lend|
+      stroke {line lstart, lend}
+    end
+    
+    start_new_page if page_count > 0
   end
 end
