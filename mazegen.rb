@@ -62,13 +62,19 @@ class CellGraph
     px >= 0 && py >= 0 && py < @y && px < @x
   end
   
+  def reset_edges
+    @node_edges = init_edges
+  end
+  
   private
   def init_coords
     Hash[*nodenums.zip(nodenums.map {|num| [num % @x, num / @x]}).flatten(1)]
   end
 
   def init_edges
-    Hash[*nodenums.zip(nodenums.map {|x| Set.new }).flatten]
+    Hash.new do |hash,key|
+      hash[key] = Set.new
+    end
   end
 
   def init_neighbors
@@ -89,12 +95,6 @@ end
 class Maze
   def initialize(x,y)
     @cg = CellGraph.new(x,y)
-
-    @maze_cells = (Set.new << 0)
-    @walls = walls_for(0)
-    
-    @startcell = 0
-    @endcell = (x * y) - 1
   end
   
   attr_reader :cg
@@ -104,6 +104,7 @@ class Maze
   end
   
   def gen
+    reset
     while @walls.size > 0
       source,dest = @walls.delete_at(rand(@walls.size))
       unless @maze_cells.include? dest
@@ -133,6 +134,17 @@ class Maze
     result -= [:bottom] if cell == @endcell
     
     result
+  end
+  
+  private
+  def reset
+    @cg.reset_edges
+    
+    @maze_cells = (Set.new << 0)
+    @walls = walls_for(0)
+    
+    @startcell = 0
+    @endcell = (@cg.x * @cg.y) - 1
   end
 end
 
@@ -206,11 +218,12 @@ rescue OptionParser::InvalidOption
   exit
 end
 
+m = Maze.new(width, height)
+
 Prawn::Document.generate(ARGV[0]) do
   while page_count > 0
     page_count -= 1
     
-    m = Maze.new(width, height)
     m.gen
     
     MazeRenderer.new(m,cellsize).render_lines.each do |lstart,lend|
