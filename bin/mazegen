@@ -1,0 +1,73 @@
+#!/usr/bin/env ruby
+
+# mazegen.rb is a simple program that generates simple mazes by finding a
+# spanning tree of the cells in the maze.  (Perhaps someday it will be have
+# more interesting functionality.)  The mazes mazegen generates are PDF files
+# that are designed to mostly fill a letter-sized sheet of paper.  To run
+# mazegen, you'll need the prawn library for PDF generation.
+
+# mazegen.rb is licensed under the Apache Software License, version 2.0 
+# and copyright (c) 2010 William Benton (http://willbenton.com)
+
+require 'rubygems'
+require 'set'
+require 'prawn'
+
+require 'willb-mazegen/cellgraph'
+require 'willb-mazegen/maze'
+require 'willb-mazegen/mazerenderer'
+
+DEFAULT_WIDTH = 67
+DEFAULT_HEIGHT = 90
+PAGE_WIDTH = 536
+PAGE_HEIGHT = 720
+
+width = DEFAULT_WIDTH
+height = DEFAULT_HEIGHT
+cellsize = PAGE_WIDTH / DEFAULT_WIDTH
+
+page_count = 1
+
+op = OptionParser.new do |opts|
+  opts.banner = "Usage:  mazegen [options] outfile.pdf"
+  
+  opts.on("-w", "--width COLS", "width of maze in cells (defaults to 67)") do |w| 
+    width = w.to_i
+    cellsize = PAGE_WIDTH / width
+    height = PAGE_HEIGHT / cellsize
+  end
+  
+  opts.on("-p", "--pagecount NUM", "number of mazes to put in the output document") do |p| 
+    page_count = p.to_i
+  end
+  
+end
+
+begin
+  op.parse!
+rescue OptionParser::InvalidOption
+  puts op
+  exit
+end
+
+if ARGV.size < 1
+  puts "You must specify an output file"
+  puts op
+  exit
+end
+
+m = Maze.new(width, height)
+
+Prawn::Document.generate(ARGV[0]) do
+  while page_count > 0
+    page_count -= 1
+    
+    m.gen
+    
+    MazeRenderer.new(m,cellsize).render_lines.each do |lstart,lend|
+      stroke {line lstart, lend}
+    end
+    
+    start_new_page if page_count > 0
+  end
+end
