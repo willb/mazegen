@@ -28,6 +28,9 @@ cellsize = PAGE_WIDTH / DEFAULT_WIDTH
 
 page_count = 1
 
+algorithms = {"prim"=>MazePrim, "rb"=>MazeRB}
+algorithm = MazePrim
+
 op = OptionParser.new do |opts|
   opts.banner = "Usage:  mazegen [options] outfile.pdf"
   
@@ -41,6 +44,9 @@ op = OptionParser.new do |opts|
     page_count = p.to_i
   end
   
+  opts.on("-a", "--algorithm ALGO", "algorithm for maze generation (#{algorithms.keys.join(", ")}; default is prim)") do |alg|
+    algorithm = algorithms[alg.downcase]
+  end
 end
 
 begin
@@ -56,7 +62,14 @@ if ARGV.size < 1
   exit
 end
 
-m = Maze.new(width, height)
+if algorithm == nil
+  puts "You must pick a valid maze generation algorithm."
+  puts "Valid algorithms are #{algorithms.keys.join(", ")}."
+  puts op
+  exit
+end
+
+m = algorithm.new(width, height)
 
 Prawn::Document.generate(ARGV[0]) do
   while page_count > 0
