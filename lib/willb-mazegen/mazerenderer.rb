@@ -1,6 +1,14 @@
 # mazerenderer.rb is licensed under the Apache Software License, version 2.0 
 # and Copyright (c) 2010 William Benton (http://willbenton.com)
 
+class Array
+  def flatten_once
+    self.inject([]) do |acc, val|
+      val.is_a?(Array) ? acc + val : acc << val
+    end
+  end
+end
+
 class MazeRenderer
   def initialize(m, cellsize)
     @maze = m
@@ -34,6 +42,6 @@ class MazeRenderer
   private
   def gen_corners(x,y)
     pairs = {:ul=>[x,y],:ur=>[x+1,y],:bl=>[x,y+1],:br=>[x+1,y+1]}.map {|key,val| [key,val.map{|p| p * @cellsize}]}
-    Hash[*pairs.flatten(1)]
+    Hash[*pairs.flatten_once]
   end
 end
