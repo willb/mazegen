@@ -1,5 +1,5 @@
 # mazerenderer.rb is licensed under the Apache Software License, version 2.0 
-# and copyright (c) 2010 William Benton (http://willbenton.com)
+# and Copyright (c) 2010 William Benton (http://willbenton.com)
 
 class MazeRenderer
   def initialize(m, cellsize)

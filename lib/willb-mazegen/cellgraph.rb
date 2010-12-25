@@ -1,5 +1,5 @@
 # cellgraph.rb is licensed under the Apache Software License, version 2.0 
-# and copyright (c) 2010 William Benton (http://willbenton.com)
+# and Copyright (c) 2010 William Benton (http://willbenton.com)
 
 # An undirected, unweighted graph of cells on a square grid; edges 
 # indicate spaces, non-edges (between neighbors) indicate walls
