@@ -1,27 +1,18 @@
 # maze.rb is licensed under the Apache Software License, version 2.0 
 # and Copyright (c) 2010 William Benton (http://willbenton.com)
 
-class Maze
+# common infrastructure
+module MazeBase
   def initialize(x,y)
     @cg = CellGraph.new(x,y)
+    @startcell = 0
+    @endcell = (@cg.x * @cg.y) - 1
   end
   
   attr_reader :cg
   
   def size 
     [@cg.x,@cg.y]
-  end
-  
-  def gen
-    reset
-    while @walls.size > 0
-      source,dest = @walls.delete_at(rand(@walls.size))
-      unless @maze_cells.include? dest
-        @maze_cells << dest
-        @cg.add_edge(source=>dest)
-        @walls = @walls + walls_for(dest)
-      end
-    end
   end
   
   def walls_for(cell)
@@ -44,16 +35,60 @@ class Maze
     
     result
   end
+end
+
+# Prim algorithm maze generator
+class MazePrim
+  include MazeBase
   
+  def gen
+    reset
+    while @walls.size > 0
+      source,dest = @walls.delete_at(rand(@walls.size))
+      unless @maze_cells.include? dest
+        @maze_cells << dest
+        @cg.add_edge(source=>dest)
+        @walls = @walls + walls_for(dest)
+      end
+    end
+  end
+
   private
   def reset
     @cg.reset_edges
     
     @maze_cells = (Set.new << 0)
     @walls = walls_for(0)
-    
-    @startcell = 0
-    @endcell = (@cg.x * @cg.y) - 1
   end
 end
 
+# recursive-backtracking maze generator
+class MazeRB
+  include MazeBase
+
+  def gen
+    reset
+    gen_from(@startcell)
+  end
+  
+  private
+  def reset
+    @cg.reset_edges
+    
+    @maze_cells = Set.new << @startcell
+  end
+
+  def gen_from(cell)
+    @maze_cells << cell
+    neighbor_set = (Set[*@cg.neighbors(cell)] - @maze_cells)
+
+    while not neighbor_set.empty?
+      dest = neighbor_set.to_a.delete_at(rand(neighbor_set.size))
+      neighbor_set.delete(dest)
+      @cg.add_edge(cell=>dest)
+      gen_from(dest)
+      neighbor_set -= @maze_cells
+    end
+  end
+end
+    
