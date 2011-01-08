@@ -63,7 +63,7 @@ class MazePrim
 end
 
 # recursive-backtracking DFS maze generator
-class MazeRB
+class MazeDFS
   include MazeBase
 
   def gen
