@@ -36,8 +36,8 @@ op = OptionParser.new do |opts|
   
   opts.on("-w", "--width COLS", "width of maze in cells (defaults to 67)") do |w| 
     width = w.to_i
-    cellsize = PAGE_WIDTH / width
-    height = PAGE_HEIGHT / cellsize
+    cellsize = PAGE_WIDTH.to_f / width
+    height = (PAGE_HEIGHT / cellsize).to_i
   end
   
   opts.on("-p", "--pagecount NUM", "number of mazes to put in the output document") do |p| 
