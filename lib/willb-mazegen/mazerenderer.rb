@@ -4,7 +4,7 @@
 class Array
   def flatten_once
     self.inject([]) do |acc, val|
-      val.is_a?(Array) ? acc + val : acc << val
+      val.is_a?(Array) ? acc.concat(val) : acc << val
     end
   end
 end
