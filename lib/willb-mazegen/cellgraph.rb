@@ -60,7 +60,7 @@ class CellGraph
   
   private
   def init_coords
-    Hash[*nodenums.zip(nodenums.map {|num| [num % @x, num / @x]}).flatten(1)]
+    Hash[*nodenums.zip(nodenums.map {|num| [num % @x, num / @x]}).flatten_once]
   end
 
   def init_edges
@@ -70,7 +70,7 @@ class CellGraph
   end
 
   def init_neighbors
-    Hash[*nodenums.zip(nodenums.map {|num| gen_neighbors(num)}).flatten(1)]
+    Hash[*nodenums.zip(nodenums.map {|num| gen_neighbors(num)}).flatten_once]
   end
 
   def nodenums
