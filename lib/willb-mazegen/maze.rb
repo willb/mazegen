@@ -62,33 +62,34 @@ class MazePrim
   end
 end
 
-# recursive-backtracking maze generator
+# recursive-backtracking DFS maze generator
 class MazeRB
   include MazeBase
 
   def gen
+    @first_cell = rand(cg.x * cg.y)
     reset
-    gen_from(@startcell)
+    gen_from(@first_cell)
   end
   
   private
   def reset
     @cg.reset_edges
     
-    @maze_cells = Set.new << @startcell
+    @maze_cells = SortedSet.new
+    @neighbor_set = Hash.new {|h,cell| h[cell] =  @cg.neighbors(cell).reject {|x| @maze_cells.include?(x)}; h[cell]}
   end
 
   def gen_from(cell)
     @maze_cells << cell
-    neighbor_set = (Set[*@cg.neighbors(cell)] - @maze_cells)
 
-    while not neighbor_set.empty?
-      dest = neighbor_set.to_a.delete_at(rand(neighbor_set.size))
-      neighbor_set.delete(dest)
+    my_neighbor_set = @neighbor_set[cell]
+
+    while not my_neighbor_set.empty?
+      dest = my_neighbor_set.delete_at(rand(my_neighbor_set.size))
       @cg.add_edge(cell=>dest)
       gen_from(dest)
-      neighbor_set -= @maze_cells
+      my_neighbor_set.reject! {|x| @maze_cells.include?(x)}
     end
   end
 end
-    
