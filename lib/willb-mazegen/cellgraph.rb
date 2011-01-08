@@ -23,7 +23,11 @@ class CellGraph
   end
 
   alias add_edge add_edges
-
+  
+  def size
+    return x * y
+  end
+  
   def edges_from(node)
     @node_edges[node].map {|dest| [node, dest]}
   end
