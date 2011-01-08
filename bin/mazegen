@@ -28,7 +28,7 @@ cellsize = PAGE_WIDTH / DEFAULT_WIDTH
 
 page_count = 1
 
-algorithms = {"prim"=>MazePrim, "rb"=>MazeDFS, "dfs"=>MazeDFS}
+algorithms = {"prim"=>MazePrim, "easy-dfs"=>MazeEasyDFS, "dfs"=>MazeDFS, "rb"=>MazeDFS}
 algorithm = MazePrim
 
 op = OptionParser.new do |opts|

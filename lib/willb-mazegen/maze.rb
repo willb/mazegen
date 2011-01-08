@@ -67,12 +67,15 @@ class MazeDFS
   include MazeBase
 
   def gen
-    @first_cell = rand(cg.x * cg.y)
     reset
-    gen_from(@first_cell)
+    gen_from(first_cell)
   end
   
   private
+  def first_cell
+    rand(cg.x * cg.y)
+  end
+  
   def reset
     @cg.reset_edges
     
@@ -91,5 +94,12 @@ class MazeDFS
       gen_from(dest)
       my_neighbor_set.reject! {|x| @maze_cells.include?(x)}
     end
+  end
+end
+
+class MazeEasyDFS < MazeDFS
+  private
+  def first_cell
+    @startcell
   end
 end
