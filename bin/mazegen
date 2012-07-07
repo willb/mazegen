@@ -29,7 +29,7 @@ cellsize = PAGE_WIDTH / DEFAULT_WIDTH
 page_count = 1
 
 algorithms = {"prim"=>MazePrim, "easy-dfs"=>MazeEasyDFS, "dfs"=>MazeDFS, "rb"=>MazeDFS}
-algorithm = MazePrim
+algorithm = MazeDFS
 
 op = OptionParser.new do |opts|
   opts.banner = "Usage:  mazegen [options] outfile.pdf"
@@ -44,7 +44,7 @@ op = OptionParser.new do |opts|
     page_count = p.to_i
   end
   
-  opts.on("-a", "--algorithm ALGO", "algorithm for maze generation (#{algorithms.keys.join(", ")}; default is prim)") do |alg|
+  opts.on("-a", "--algorithm ALGO", "algorithm for maze generation (#{algorithms.keys.join(", ")}; default is dfs)") do |alg|
     algorithm = algorithms[alg.downcase]
   end
 end
