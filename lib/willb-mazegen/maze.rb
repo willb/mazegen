@@ -83,16 +83,23 @@ class MazeDFS
     @neighbor_set = Hash.new {|h,cell| h[cell] =  @cg.neighbors(cell).reject {|x| @maze_cells.include?(x)}; h[cell]}
   end
 
-  def gen_from(cell)
-    @maze_cells << cell
-
-    my_neighbor_set = @neighbor_set[cell]
-
-    while not my_neighbor_set.empty?
-      dest = my_neighbor_set.delete_at(rand(my_neighbor_set.size))
-      @cg.add_edge(cell=>dest)
-      gen_from(dest)
-      my_neighbor_set.reject! {|x| @maze_cells.include?(x)}
+  def gen_from(initial_cell)
+    worklist = [initial_cell]
+    while not worklist.empty?
+      cell = worklist.last
+      my_neighbor_set = @neighbor_set[cell]
+      
+      if my_neighbor_set.empty?
+        worklist.pop
+        unless worklist.empty?
+          @neighbor_set[worklist.last].reject! {|x| @maze_cells.include?(x)}
+        end
+      else
+        dest = my_neighbor_set.delete_at(rand(my_neighbor_set.size))
+        @cg.add_edge(cell=>dest)
+        worklist << dest
+        @maze_cells << dest
+      end
     end
   end
 end
